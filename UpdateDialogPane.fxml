@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<DialogPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.DialogController">
+   <content>
+      <GridPane>
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label fx:id="LabelName" text="Artist name :" translateX="100.0" />
+            <Label fx:id="LabelAlbumName" text="Artist album name :" translateX="100.0" GridPane.rowIndex="1" />
+            <TextField prefHeight="25.0" prefWidth="283.0" translateX="-60.0" GridPane.columnIndex="1" />
+            <TextField translateX="-60.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TableView fx:id="albumTableView" prefHeight="90.0" prefWidth="547.0" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.rowSpan="2">
+              <columns>
+                <TableColumn prefWidth="290.0" text="Album name" />
+                <TableColumn minWidth="0.0" prefWidth="290.0" text="Songs" />
+              </columns>
+            </TableView>
+         </children>
+      </GridPane>
+   </content>
+</DialogPane>
