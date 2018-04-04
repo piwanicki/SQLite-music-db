@@ -8,9 +8,13 @@ package sample.model;
 
 
 
+import sample.DialogController;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 public class DataSource {
 
@@ -85,6 +89,8 @@ public class DataSource {
             COLUMN_SONG_TITLE + " FROM " + TABLE_ARTIST_SONG_VIEW + " WHERE " + COLUMN_SONG_TITLE + " = ?" + " COLLATE NOCASE";
 
 
+
+
     // PreparedStatement
     //Deklaruje stala dla  zapytania SQL z ?
     //Tworze instancje PreparedStatemnt uzywajac connection.prepareStatement(sqlStatementString)
@@ -125,6 +131,8 @@ public class DataSource {
     public static final String QUERY_ALBUMS_BY_ARTIST_ID = "SELECT * FROM " + TABLE_ALBUMS + " WHERE " + COLUMN_ALBUM_ARTIST + " =? " + " ORDER BY " + COLUMN_ALBUM_NAME + " COLLATE NOCASE";
     public static final String QUERY_ALBUM_FOR_ARTIST = " SELECT " + COLUMN_ALBUM_NAME + " FROM " + TABLE_ALBUMS + " WHERE " + COLUMN_ARTIST_NAME + " =?";
 
+    public static final String UPDATE_ARTIST_NAME_FROM_ARTIST_TABLE = "UPDATE " + TABLE_ARTISTS + " SET " + COLUMN_ARTIST_NAME + "= ? " + " WHERE " + TABLE_ARTISTS + "." + COLUMN_ARTIST_NAME + "= ?";
+
 
 
     public static List<Artist> artistsList = new ArrayList<>();
@@ -140,6 +148,8 @@ public class DataSource {
 
     private PreparedStatement queryAlbumsByArtistID;
     private PreparedStatement queryAlbumForArtist;
+
+    private PreparedStatement updateArtist;
 
     private Connection connection;
 
@@ -169,6 +179,8 @@ public class DataSource {
             querySong = connection.prepareStatement(QUERY_SONG);
             queryAlbumsByArtistID = connection.prepareStatement(QUERY_ALBUMS_BY_ARTIST_ID);
             queryAlbumForArtist = connection.prepareStatement(QUERY_ALBUM_FOR_ARTIST);
+
+            updateArtist = connection.prepareStatement(UPDATE_ARTIST_NAME_FROM_ARTIST_TABLE);
 
             return true;
         } catch (SQLException e) {
@@ -213,6 +225,10 @@ public class DataSource {
 
             if(queryAlbumForArtist != null){
                 queryAlbumForArtist.close();
+            }
+
+            if(updateArtist != null){
+                updateArtist.close();
             }
 
             if (connection != null) {
@@ -302,7 +318,7 @@ public class DataSource {
                  *   Thread.sleep is  here only for showing how progBar is working
                  */
                 try{
-                    Thread.sleep(10);
+                    Thread.sleep(5);
                 } catch (InterruptedException e){
                     System.out.println(e.getMessage());
                 }
@@ -621,6 +637,22 @@ public class DataSource {
             System.out.println("Error queryAlbumForArtistID method -> " + e.getMessage());
             return null;
         }
+    }
+
+    public void updateArtistRecord(String artistName, String newArtistName){
+
+        try{
+            updateArtist.setString(2,artistName);
+            updateArtist.setString(1,newArtistName);
+            updateArtist.execute();
+            System.out.println("Record updated");
+
+        }catch(SQLException e){
+            System.out.println("Something went wrong with updating an artist record");
+            e.getMessage();
+            e.printStackTrace();
+        }
+
     }
 }
 

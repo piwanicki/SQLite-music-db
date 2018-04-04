@@ -23,10 +23,10 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label fx:id="LabelName" text="Artist name :" translateX="100.0" />
-            <Label fx:id="LabelAlbumName" text="Artist album name :" translateX="100.0" GridPane.rowIndex="1" />
-            <TextField prefHeight="25.0" prefWidth="283.0" translateX="-60.0" GridPane.columnIndex="1" />
-            <TextField translateX="-60.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label text="Artist name :" translateX="100.0" />
+            <Label text="Artist album name :" translateX="100.0" GridPane.rowIndex="1" />
+            <TextField fx:id="artistName" prefHeight="25.0" prefWidth="283.0" translateX="-60.0" GridPane.columnIndex="1" />
+            <TextField fx:id="artistAlbumName" translateX="-60.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <TableView fx:id="albumTableView" prefHeight="90.0" prefWidth="547.0" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.rowSpan="2">
               <columns>
                 <TableColumn prefWidth="290.0" text="Album name" />

@@ -7,7 +7,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
-<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -33,7 +33,7 @@
             <Button alignment="CENTER" onAction="#listArtists" prefWidth="130.0" text="List Artists" textAlignment="CENTER" />
             <Button mnemonicParsing="false" onAction="#showListOfAlbums" prefWidth="130.0" text="Show album &quot;Artists&quot;" />
             <Button alignment="CENTER" mnemonicParsing="false" onAction="#updateArtist" prefWidth="130.0" text="Update artist" textAlignment="CENTER" />
-            <Button onAction="#addNewRecord" mnemonicParsing="false" prefWidth="130.0" text="Add new record" />
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#addNewRecord" prefWidth="130.0" text="Add new record" />
          </children>
           <BorderPane.margin>
               <Insets right="10" />
@@ -43,8 +43,8 @@
    <bottom>
     <HBox alignment="BOTTOM_LEFT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="20.0" spacing="100.0" BorderPane.alignment="BOTTOM_LEFT">
         <children>
-            <Label fx:id="info" pickOnBounds="false" prefHeight="17.0" textAlignment="CENTER" visible="false" />
-            <ProgressBar fx:id="progBar" blendMode="GREEN" cache="true" layoutX="70.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="20" prefWidth="150" progress="0.0" translateX="150.0" visible="false">
+            <Label fx:id="infoLabel" pickOnBounds="false" prefHeight="17.0" textAlignment="CENTER" visible="false" />
+            <ProgressBar fx:id="progBar" cache="true" layoutX="70.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="20" prefWidth="150" progress="0.0" translateX="150.0" visible="false">
                 <HBox.margin>
                     <Insets />
                 </HBox.margin>
@@ -52,7 +52,7 @@
                   <Insets />
                </opaqueInsets>
                <effect>
-                  <DropShadow />
+                  <Blend />
                </effect>
             </ProgressBar>
         </children>
