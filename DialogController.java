@@ -30,11 +30,17 @@ public class DialogController {
 
         DataSource.getInstance().updateArtistRecord(artist.getName(),newArtist);
 
+    }
+
+    public void deleteRecord(Artist artist){
+
+        DataSource.getInstance().deleteArtistRecord(artist.getName());
 
 
     }
 
-    public void addNewRecorddc() {
+
+    public Artist addNewRecorddc() {
 
         String artName = artistName.getText().trim();
         String albumName = artistAlbumName.getText().trim();
@@ -51,9 +57,11 @@ public class DialogController {
             album.setName(albumName);
             album.setArtistID(id);
             album.setId(albumId);
+            return artist;
 
         } catch (SQLException e) {
             System.out.println("Error with adding a new record : " + e.getMessage());
+            return null;
         }
     }
 

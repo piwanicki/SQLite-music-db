@@ -29,8 +29,7 @@ public class Artist {
         this.name.set(name);
     }
 
-
-
-
-
+    public SimpleStringProperty nameProperty() {
+        return name;
+    }
 }

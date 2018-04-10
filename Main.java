@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -31,7 +30,7 @@ public class Main extends Application {
         primaryStage.show();
 
         Controller controller = loader.getController();
-        controller.listArtists();
+        //controller.listArtists();
 
 
     }
@@ -42,9 +41,6 @@ public class Main extends Application {
 
         DataSource.getInstance().open();
     }
-
-
-
 
     @Override
     public void stop() throws Exception {

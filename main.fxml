@@ -3,6 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -16,7 +19,7 @@
     <center>
         <TableView fx:id="artistsTable" prefHeight="200" prefWidth="200" BorderPane.alignment="CENTER">
             <columns>
-                <TableColumn prefWidth="${artistsTable.width}" text="Name">
+                <TableColumn fx:id="nameColumn" prefWidth="${artistsTable.width}" text="Name">
                     <cellValueFactory>
                         <PropertyValueFactory property="name" />
                     </cellValueFactory>
@@ -34,6 +37,8 @@
             <Button mnemonicParsing="false" onAction="#showListOfAlbums" prefWidth="130.0" text="Show album &quot;Artists&quot;" />
             <Button alignment="CENTER" mnemonicParsing="false" onAction="#updateArtist" prefWidth="130.0" text="Update artist" textAlignment="CENTER" />
             <Button alignment="CENTER" mnemonicParsing="false" onAction="#addNewRecord" prefWidth="130.0" text="Add new record" />
+             <Button alignment="CENTER" onAction="#countRecords" text="Count Records" />
+             <!--<Button alignment="CENTER" onAction="#refreshList" text="Refresh"/>-->
          </children>
           <BorderPane.margin>
               <Insets right="10" />
@@ -44,7 +49,7 @@
     <HBox alignment="BOTTOM_LEFT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="20.0" spacing="100.0" BorderPane.alignment="BOTTOM_LEFT">
         <children>
             <Label fx:id="infoLabel" pickOnBounds="false" prefHeight="17.0" textAlignment="CENTER" visible="false" />
-            <ProgressBar fx:id="progBar" cache="true" layoutX="70.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="20" prefWidth="150" progress="0.0" translateX="150.0" visible="false">
+            <ProgressBar fx:id="progBar" cache="true" layoutX="70.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="20" prefWidth="150" progress="0.0" translateX="150.0">
                 <HBox.margin>
                     <Insets />
                 </HBox.margin>
@@ -58,4 +63,27 @@
         </children>
     </HBox>
    </bottom>
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#openDatabase" text="Open Database" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" onAction="#testUpdatingTable" text="Edit">
+            <items>
+                  <MenuItem mnemonicParsing="false" text="Edit record" />
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#openAbout" text="About" />
+                  <MenuItem mnemonicParsing="false" onAction="#openGH" text="My GitHub" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
 </BorderPane>

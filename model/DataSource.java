@@ -6,10 +6,6 @@ package sample.model;
  */
 
 
-
-
-import sample.DialogController;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,8 +85,6 @@ public class DataSource {
             COLUMN_SONG_TITLE + " FROM " + TABLE_ARTIST_SONG_VIEW + " WHERE " + COLUMN_SONG_TITLE + " = ?" + " COLLATE NOCASE";
 
 
-
-
     // PreparedStatement
     //Deklaruje stala dla  zapytania SQL z ?
     //Tworze instancje PreparedStatemnt uzywajac connection.prepareStatement(sqlStatementString)
@@ -133,6 +127,10 @@ public class DataSource {
 
     public static final String UPDATE_ARTIST_NAME_FROM_ARTIST_TABLE = "UPDATE " + TABLE_ARTISTS + " SET " + COLUMN_ARTIST_NAME + "= ? " + " WHERE " + TABLE_ARTISTS + "." + COLUMN_ARTIST_NAME + "= ?";
 
+    public static final String DELETE_ARTIST = "DELETE FROM " + TABLE_ARTISTS + " WHERE " + TABLE_ARTISTS + "." + COLUMN_ARTIST_NAME  + "=?";
+
+
+    public static final String UPDATE_ARTIS_NAME = " UPDATE " + TABLE_ARTISTS + " SET " + COLUMN_ARTIST_NAME + " = ? WHERE " + COLUMN_ARTIST_ID + " = ?";
 
 
     public static List<Artist> artistsList = new ArrayList<>();
@@ -150,6 +148,9 @@ public class DataSource {
     private PreparedStatement queryAlbumForArtist;
 
     private PreparedStatement updateArtist;
+    private PreparedStatement deleteArtist;
+
+    private PreparedStatement updateArtistName;
 
     private Connection connection;
 
@@ -181,6 +182,9 @@ public class DataSource {
             queryAlbumForArtist = connection.prepareStatement(QUERY_ALBUM_FOR_ARTIST);
 
             updateArtist = connection.prepareStatement(UPDATE_ARTIST_NAME_FROM_ARTIST_TABLE);
+            deleteArtist = connection.prepareStatement(DELETE_ARTIST);
+
+            updateArtistName = connection.prepareStatement(UPDATE_ARTIS_NAME);
 
             return true;
         } catch (SQLException e) {
@@ -230,6 +234,15 @@ public class DataSource {
             if(updateArtist != null){
                 updateArtist.close();
             }
+
+            if(deleteArtist != null){
+                deleteArtist.close();
+            }
+
+            if(updateArtistName != null){
+                updateArtistName.close();
+            }
+
 
             if (connection != null) {
                 connection.close();
@@ -427,7 +440,7 @@ public class DataSource {
         }
     }
 
-    public void countRecords(String table) {
+    public int countRecords(String table) {
 
         String sql = "SELECT COUNT(*) FROM " + table;
 
@@ -437,9 +450,11 @@ public class DataSource {
             int numOfRecords = resultSet.getInt(1);
 
             System.out.println("Number of records in table : >" + table + "< equals : " + numOfRecords);
+            return numOfRecords;
 
         } catch (SQLException e) {
             System.out.println("Something went wrong with counting records " + e.getMessage());
+            return 0;
         }
     }
 
@@ -652,9 +667,39 @@ public class DataSource {
             e.getMessage();
             e.printStackTrace();
         }
+    }
 
+    public void deleteArtistRecord(String artistName){
+
+        try {
+            deleteArtist.setString(1,artistName);
+            deleteArtist.execute();
+        } catch(SQLException e){
+            System.out.println("Something went wrong with deleting record");
+            e.getMessage();
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public boolean testUpdateArtistName(int id, String newName){
+
+        try{
+
+            updateArtistName.setInt(2,id);
+            updateArtistName.setString(1,newName);
+            int affectedRows = updateArtistName.executeUpdate();
+            return affectedRows ==1;
+
+        }catch (SQLException e ) {
+            System.out.println("Problem with updating artistName, " + e.getMessage());
+            return false;
+        }
     }
 }
+
+
 
 
 
