@@ -23,7 +23,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
         Parent root  = loader.load();
         primaryStage.setTitle("Music Database explorer");
-        Scene mainScene = new Scene(root,700,700);
+        Scene mainScene = new Scene(root,1000,700);
         primaryStage.setScene(mainScene);
         primaryStage.setAlwaysOnTop(false);
         primaryStage.toBack();

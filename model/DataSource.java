@@ -5,7 +5,6 @@ package sample.model;
  * Class is a singleton
  */
 
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,6 +131,22 @@ public class DataSource {
 
     public static final String UPDATE_ARTIS_NAME = " UPDATE " + TABLE_ARTISTS + " SET " + COLUMN_ARTIST_NAME + " = ? WHERE " + COLUMN_ARTIST_ID + " = ?";
 
+//    select songs.track, songs.title from songs
+//    inner join albums on songs.album = albums._id
+//    inner join artists on albums.artist = artists._id
+//    where albums._id = "2" order by songs.track
+
+    public static final String QUERY_SONGS_BY_ALBUM_ID = " SELECT " + TABLE_SONGS +'.' +COLUMN_SONG_TRACK + ", " + TABLE_SONGS + '.' +  COLUMN_SONG_TITLE  + " FROM " + TABLE_SONGS +
+        " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_SONGS + '.' + COLUMN_SONG_ALBUM + " =" + TABLE_ALBUMS+'.'+COLUMN_ALBUM_ID +
+        " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS +'.' +COLUMN_ALBUM_ARTIST + " =" + TABLE_ARTISTS + '.'+COLUMN_ARTIST_ID + " WHERE " +
+        TABLE_ALBUMS+ '.' + COLUMN_ALBUM_ID + " =?" + " ORDER BY " + TABLE_ALBUMS + '.' + COLUMN_ALBUM_NAME + ", " + TABLE_SONGS + '.' + COLUMN_SONG_TRACK;
+
+    public static final String DELETE_ALBUM_BY_ALBUM_NAME = " DELETE FROM " + TABLE_ALBUMS  + " WHERE " + TABLE_ALBUMS + '.' + COLUMN_ALBUM_NAME + " =?";
+    public static final String EDIT_ALBUM_BY_ALBUM_NAME = "UPDATE " + TABLE_ALBUMS + " SET " + COLUMN_ALBUM_NAME + " = ? WHERE " + COLUMN_ALBUM_NAME + " = ?";
+
+    public static final String DELETE_SONG_BY_SONG_TITLE = " DELETE FROM " + TABLE_SONGS + " WHERE " + TABLE_SONGS + '.' + COLUMN_SONG_TITLE + " =?";
+    public static final String EDIT_SONG_BY_SONG_TITLE = " UPDATE " + TABLE_SONGS + " SET " + COLUMN_SONG_TITLE + " = ? WHERE " + COLUMN_SONG_TITLE + " =?";
+
 
     public static List<Artist> artistsList = new ArrayList<>();
 
@@ -151,6 +166,14 @@ public class DataSource {
     private PreparedStatement deleteArtist;
 
     private PreparedStatement updateArtistName;
+
+    private PreparedStatement querySongsByAlbumID;
+
+    private PreparedStatement deleteAlbum;
+    private PreparedStatement editAlbum;
+
+    private PreparedStatement deleteSong;
+    private PreparedStatement editSong;
 
     private Connection connection;
 
@@ -185,6 +208,14 @@ public class DataSource {
             deleteArtist = connection.prepareStatement(DELETE_ARTIST);
 
             updateArtistName = connection.prepareStatement(UPDATE_ARTIS_NAME);
+
+            querySongsByAlbumID = connection.prepareStatement(QUERY_SONGS_BY_ALBUM_ID);
+
+            deleteAlbum = connection.prepareStatement(DELETE_ALBUM_BY_ALBUM_NAME);
+            editAlbum = connection.prepareStatement(EDIT_ALBUM_BY_ALBUM_NAME);
+
+            deleteSong = connection.prepareStatement(DELETE_SONG_BY_SONG_TITLE);
+            editSong = connection.prepareStatement(EDIT_SONG_BY_SONG_TITLE);
 
             return true;
         } catch (SQLException e) {
@@ -243,10 +274,31 @@ public class DataSource {
                 updateArtistName.close();
             }
 
+            if(querySongsByAlbumID != null){
+                querySongsByAlbumID.close();
+            }
+
+            if(deleteAlbum != null){
+                deleteAlbum.close();
+            }
+
+            if(editAlbum != null){
+                editAlbum.close();
+            }
+
+            if(deleteSong != null){
+                deleteSong.close();
+            }
+
+            if(editSong != null){
+                editSong.close();
+            }
+
 
             if (connection != null) {
                 connection.close();
             }
+
 
 
         } catch (SQLException e) {
@@ -654,6 +706,39 @@ public class DataSource {
         }
     }
 
+    public List<Song> querySongForAlbumID(int id){
+
+        try{
+            querySongsByAlbumID.setInt(1,id);
+            ResultSet result  = querySongsByAlbumID.executeQuery();
+            System.out.println("query songs :");
+
+            List<Song> songs = new ArrayList<>();
+            while(result.next()){
+
+                Song song = new Song();
+
+                song.setTrack(result.getInt(1));
+                song.setTitle(result.getString(2));
+
+                songs.add(song);
+
+//                for(Song song1 : songs){
+//                    System.out.println(song1.getTitle());
+//                }
+            }
+
+            return songs;
+        }catch (SQLException e){
+            System.out.println("Something went wrong with querySongForAlbumID method " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+
+
+    }
+
+
     public void updateArtistRecord(String artistName, String newArtistName){
 
         try{
@@ -681,6 +766,57 @@ public class DataSource {
         }
     }
 
+    public void editAlbumRecord(String albumName, String newAlbumName){
+
+        try{
+            editAlbum.setString(1,albumName);
+            editAlbum.setString(2,newAlbumName);
+            editAlbum.execute();
+            System.out.println("Album record updated");
+
+        } catch(SQLException e) {
+            System.out.println("Something went wrong with editAlbum method! " + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+
+    public void deleteAlbumRecord(String albumName){
+
+        try{
+            deleteAlbum.setString(1,albumName);
+            deleteAlbum.execute();
+            System.out.println("Album record deleted");
+        }catch (SQLException e){
+            System.out.println("Something went wrong with album delete method! " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void editSongRecord(String songName, String newSongName){
+
+        try{
+            editSong.setString(1,songName);
+            editSong.setString(2,newSongName);
+            editSong.execute();
+            System.out.println("Song record updated");
+        } catch(SQLException e){
+            System.out.println("Something went wrong with update song method! " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteSongRecord(String songName){
+
+        try{
+            deleteSong.setString(1,songName);
+            deleteSong.execute();
+            System.out.println("Song record deleted");
+        } catch(SQLException e){
+            System.out.println("Something went wrong with delete song method! " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 
     public boolean testUpdateArtistName(int id, String newName){

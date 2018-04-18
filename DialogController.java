@@ -22,6 +22,8 @@ public class DialogController {
     @FXML
     private TextField artistAlbumName;
 
+
+
     public void updateRecord(Artist artist, Album album){
 
 
@@ -29,13 +31,6 @@ public class DialogController {
         String newAlbum = artistAlbumName.getText();
 
         DataSource.getInstance().updateArtistRecord(artist.getName(),newArtist);
-
-    }
-
-    public void deleteRecord(Artist artist){
-
-        DataSource.getInstance().deleteArtistRecord(artist.getName());
-
 
     }
 
@@ -64,8 +59,6 @@ public class DialogController {
             return null;
         }
     }
-
-
 
     public TableView<Album> getAlbumTableView() {
         return albumTableView;

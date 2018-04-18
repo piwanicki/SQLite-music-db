@@ -16,8 +16,6 @@ public class TasksServiceClass extends Service<ObservableList<Artist>> {
 
                 int  records = DataSource.getInstance().countRecords(DataSource.TABLE_ARTISTS);
 
-
-
                 for (int i=0; i<= records; i++){
                     updateProgress(i+1,records);
                     Thread.sleep(5);

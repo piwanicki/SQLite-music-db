@@ -1,13 +1,12 @@
 package sample;
 
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,22 +17,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-
-import sample.model.Album;
-import sample.model.Artist;
-import sample.model.DataSource;
-
+import sample.model.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import javafx.scene.input.MouseEvent;
-import sample.model.TasksServiceClass;
 
 
 
@@ -53,25 +48,56 @@ public class Controller {
     private Label infoLabel;
 
     @FXML
-    private ContextMenu contextMenu;
+    private ContextMenu contextArtistMenu;
 
     @FXML
-    private TableColumn nameColumn;
+    private ContextMenu contextAlbumMenu;
+
+    @FXML
+    private ContextMenu contextSongMenu;
 
     private Service<ObservableList<Artist>> taskService;
 
     private ObservableList<Artist> list;
+
+    @FXML
+    private Tab databaseTab = new Tab("Database");
+
+    @FXML
+    private TableView<Album> albumsTable;
+
+    @FXML
+    private TableView<Song> songsTable;
+
+    @FXML
+    private WebView webInfo;
+    private WebEngine webEngine;
 
 
 
     public void  setInfoLabel(String text){
           infoLabel.setVisible(true);
           infoLabel.setText(text);
-            }
+    }
 
 
     public void initialize() {
-        contextMenu = new ContextMenu();
+
+        webEngine = webInfo.getEngine();
+
+
+        webInfo.getEngine().setOnAlert(event -> {
+            System.out.println(event.getData());
+        });
+
+        webInfo.getEngine().setOnError(event -> {
+            System.out.println(event.getMessage());
+        });
+        this.webEngine.load("http://www.google.pl");
+
+
+
+        contextArtistMenu = new ContextMenu();
         MenuItem deleteMenuItem = new MenuItem("Delete");
         MenuItem editItem = new MenuItem("Edit");
         deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -88,21 +114,142 @@ public class Controller {
             }
         });
 
-       contextMenu.getItems().addAll(deleteMenuItem);
-       contextMenu.getItems().addAll(editItem);
+
+
+        contextArtistMenu.getItems().addAll(deleteMenuItem,editItem);
 
         artistsTable.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    contextMenu.show(artistsTable, event.getScreenX(), event.getScreenY());
+                    contextArtistMenu.show(artistsTable, event.getScreenX(), event.getScreenY());
                 }
             }
         });
 
+
+        contextAlbumMenu = new ContextMenu();
+        MenuItem addNewAlbum = new MenuItem("Add new Album");
+        MenuItem deleteAlbumItem = new MenuItem("Delete Album");
+        MenuItem editAlbumItem = new MenuItem("Edit Album");
+
+        deleteAlbumItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                deleteAlbum();
+            }
+        });
+
+        editAlbumItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                editAlbum();
+            }
+        });
+
+        addNewAlbum.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                //addNewAlbumToAlbumTable();
+            }
+        });
+
+        contextAlbumMenu.getItems().addAll(deleteAlbumItem,editAlbumItem,addNewAlbum);
+        albumsTable.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton() == MouseButton.SECONDARY){
+                    contextAlbumMenu.show(albumsTable,event.getScreenX(),event.getScreenY());
+                }
+            }
+        });
+
+
+        contextSongMenu = new ContextMenu();
+        MenuItem addNewSong = new MenuItem("Add new song");
+        MenuItem deleteSong = new MenuItem("Delete song");
+        MenuItem editSong = new MenuItem("Edit song");
+
+        deleteSong.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                deleteSongMethod();
+            }
+        });
+
+        editSong.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                editSongMethod();
+            }
+        });
+
+        addNewSong.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+               // addNewSongToSongTable();
+            }
+        });
+
+        contextSongMenu.getItems().addAll(deleteSong,editSong,addNewSong);
+
+        songsTable.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton() == MouseButton.SECONDARY){
+                    contextSongMenu.show(songsTable,event.getScreenX(),event.getScreenY());
+                }
+            }
+        });
+
+
+
+        artistsTable.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton() == MouseButton.PRIMARY){
+                        albumList();
+                }
+            }
+        });
+
+
+
+        artistsTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if(newValue != null){
+                    songsTable.getItems().clear();
+                    albumList();
+                }
+            }
+        });
+
+        albumsTable.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton() == MouseButton.PRIMARY){
+                        songList();
+                }
+            }
+        });
+
+
+
+
+        Label songLabel = new Label("Click on album to see songs");
+        songLabel.setWrapText(true);
+        songLabel.autosize();
+
+        albumsTable.setPlaceholder(new Label("Click on artist to see albums"));
+        songsTable.setPlaceholder(songLabel);
+
+
         taskService = new TasksServiceClass();
         progBar.progressProperty().bind(taskService.progressProperty());
         progBar.visibleProperty().bind(taskService.runningProperty());
+
+        //databaseTab.getContent().autosize();
 
         artistsTable.itemsProperty().bind(taskService.valueProperty());
 
@@ -135,6 +282,7 @@ public class Controller {
 
 
 
+
     @FXML
     public void listArtists() {
 
@@ -145,14 +293,14 @@ public class Controller {
 
         if(taskService.getState() == Service.State.SUCCEEDED){
             artistsTable.itemsProperty().unbind();
+            //artistsTable.getItems().clear();
+            artistsTable.itemsProperty().bind(taskService.valueProperty());
+        }
+        else if(taskService.getState() == Service.State.RUNNING){
+            artistsTable.itemsProperty().unbind();
             artistsTable.getItems().clear();
             artistsTable.itemsProperty().bind(taskService.valueProperty());
         }
-        //else if(taskService.getState() == Service.State.RUNNING){
-//            artistsTable.itemsProperty().unbind();
-//            artistsTable.getItems().clear();
-//            artistsTable.itemsProperty().bind(taskService.valueProperty());
-//        }
 
 
 //       progBar.setVisible(true);
@@ -234,6 +382,8 @@ public class Controller {
 }
 
 
+
+
         @FXML
         public void addNewRecord() {
 
@@ -259,21 +409,20 @@ public class Controller {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 Artist artist = dialogController.addNewRecorddc();
                 System.out.println("Record added " + dialogController.getArtistName().getText() + ", " + dialogController.getArtistAlbumName().getText());
-//                artistsTable.getItems().addAll(artist);
-//                getAllArtists.list.sort(new Comparator<Artist>() {
-//                    @Override
-//                    public int compare(Artist o1, Artist o2) {
-//                       return o1.getName().compareTo(o2.getName());
-//                    }
-//                });
 
-                artistsTable.itemsProperty().unbind();
-                artistsTable.getItems().clear();
 
-                taskService.restart();
+                System.out.println(taskService.getState());
 
-                artistsTable.itemsProperty().bind(taskService.valueProperty());
-
+                if(taskService.getState() == Service.State.SUCCEEDED){
+                    artistsTable.itemsProperty().unbind();
+                    taskService.restart();
+                    artistsTable.getItems().clear();
+                    artistsTable.itemsProperty().bind(taskService.valueProperty());
+                } else if (taskService.getState() == Service.State.READY){
+                    artistsTable.itemsProperty().unbind();
+                    artistsTable.getItems().clear();
+                    taskService.start();
+                }
 //                artistsTable.getItems().clear();
 //
 //                if(taskService.getState() == Service.State.SUCCEEDED){
@@ -293,37 +442,9 @@ public class Controller {
 //                        return o1.getName().compareTo(o2.getName());
 //                    }
 //                });
-
-
-
-             //   observableList();
-
-
             }
         }
 
-        public void observableList (){
-
-        Task<ObservableList<Artist>> taskArtist = new Task<ObservableList<Artist>>() {
-            @Override
-            protected ObservableList<Artist> call() throws Exception {
-                return FXCollections.observableArrayList(DataSource.getInstance().queryArtists(DataSource.ORDER_BY_ASC));
-            }
-        };
-
-//        taskArtist.setOnSucceeded(event -> {
-//            artistsTable.getItems().removeAll();
-//            artistsTable.itemsProperty().bind(taskArtist.valueProperty());
-//        });
-//
-//        new Thread(taskArtist).start();
-
-
-//        getAllArtists.list.removeAll();
-//        getAllArtists.list.setAll(DataSource.getInstance().queryArtists(DataSource.ORDER_BY_ASC));
-//        return getAllArtists.list;
-
-        }
 
     @FXML
         public void testUpdatingTable(){
@@ -347,6 +468,100 @@ public class Controller {
        new Thread(task).start();
         }
 
+    public void albumList() {
+
+        Artist artist = (Artist) artistsTable.getSelectionModel().getSelectedItem();
+
+        int artistID = artist.getId();
+
+        Task<ObservableList<Album>> albumList = new Task<ObservableList<Album>>() {
+            @Override
+            protected ObservableList<Album> call() throws Exception {
+                return FXCollections.observableArrayList(DataSource.getInstance().queryAlbumForArtistID(artistID));
+            }
+        };
+        albumsTable.itemsProperty().bind(albumList.valueProperty());
+
+        new Thread(albumList).start();
+    }
+
+    public void songList(){
+
+       Album album = (Album) albumsTable.getSelectionModel().getSelectedItem();
+
+        int albumID = album.getId();
+
+       ObservableList<Song> songs = FXCollections.observableArrayList(DataSource.getInstance().querySongForAlbumID(albumID));
+
+       Task<ObservableList<Song>> songList = new Task<ObservableList<Song>>() {
+           @Override
+           protected ObservableList<Song> call() throws Exception {
+               return songs;
+           }
+       };
+
+
+       songsTable.itemsProperty().bind(songList.valueProperty());
+
+       new Thread(songList).start();
+
+    }
+
+    @FXML
+    public void deleteAlbum() {
+
+        Album album = (Album) albumsTable.getSelectionModel().getSelectedItem();
+        DataSource.getInstance().deleteAlbumRecord(album.getName());
+        System.out.println("Album deleted : " + album.getName());
+        albumsTable.getItems().remove(album);
+
+    }
+
+    @FXML
+    public void editAlbum(){
+
+        Album album = (Album) albumsTable.getSelectionModel().getSelectedItem();
+        String newName = editDialog();
+
+        DataSource.getInstance().editAlbumRecord(album.getName(),newName);
+
+        albumsTable.itemsProperty().unbind();
+        albumsTable.getItems().clear();
+
+        albumList();
+
+        System.out.println("Album : " + album.getName() + " edited");
+
+    }
+
+
+
+    @FXML
+    public void deleteSongMethod(){
+
+        Song song = (Song) songsTable.getSelectionModel().getSelectedItem();
+        DataSource.getInstance().deleteSongRecord(song.getTitle());
+        System.out.println("Song deleted : " + song.getTitle());
+        songsTable.getItems().remove(song);
+
+    }
+
+    @FXML
+    public void editSongMethod(){
+
+        Song song = (Song) songsTable.getSelectionModel().getSelectedItem();
+        String newName = editDialog();
+
+
+        DataSource.getInstance().editSongRecord(song.getTitle().toString(),newName);
+        System.out.println("Song : " + song.getTitle() + " edited");
+
+        songsTable.itemsProperty().unbind();
+        songsTable.getItems().clear();
+        songList();
+
+
+    }
 
 
 
@@ -357,6 +572,8 @@ public class Controller {
            System.out.println("Record deleted: " + artist.getName());
            artistsTable.getItems().remove(artist);
        }
+
+
 
        @FXML
        public void openAbout() {
@@ -415,9 +632,34 @@ public class Controller {
 
          DataSource.getInstance().countRecords(DataSource.TABLE_ARTISTS);
 
-
-
      }
+
+    public String editDialog(){
+
+        Dialog<ButtonType> editDialog = new Dialog<>();
+        editDialog.initOwner(mainBorderPane.getScene().getWindow());
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("EditDialog.fxml"));
+        editDialog.setTitle("Edit record");
+        String newName = "";
+
+
+        try{
+            editDialog.getDialogPane().setContent(fxmlLoader.load());
+        } catch (IOException e){
+            System.out.println("something went wrong with loading EditDialog! " + e.getMessage());
+            e.printStackTrace();
+        }
+        editDialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        editDialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        Optional<ButtonType> result = editDialog.showAndWait();
+        EditController controller = fxmlLoader.getController();
+        if(result.isPresent() && result.get() == ButtonType.OK){
+            newName = controller.getEditLabel().getText();
+        }
+        return newName;
+    }
 
 
      }

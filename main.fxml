@@ -7,6 +7,8 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
@@ -14,37 +16,9 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.WebView?>
 
 <BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700" prefWidth="500" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
-    <center>
-        <TableView fx:id="artistsTable" prefHeight="200" prefWidth="200" BorderPane.alignment="CENTER">
-            <columns>
-                <TableColumn fx:id="nameColumn" prefWidth="${artistsTable.width}" text="Name">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="name" />
-                    </cellValueFactory>
-                </TableColumn>
-            </columns>
-        <BorderPane.margin>
-            <Insets right="10" />
-        </BorderPane.margin>
-        </TableView>
-    </center>
-   <right>
-      <VBox blendMode="MULTIPLY" maxHeight="200.0" prefHeight="170.0" prefWidth="150.0" spacing="20.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button alignment="CENTER" onAction="#listArtists" prefWidth="130.0" text="List Artists" textAlignment="CENTER" />
-            <Button mnemonicParsing="false" onAction="#showListOfAlbums" prefWidth="130.0" text="Show album &quot;Artists&quot;" />
-            <Button alignment="CENTER" mnemonicParsing="false" onAction="#updateArtist" prefWidth="130.0" text="Update artist" textAlignment="CENTER" />
-            <Button alignment="CENTER" mnemonicParsing="false" onAction="#addNewRecord" prefWidth="130.0" text="Add new record" />
-             <Button alignment="CENTER" onAction="#countRecords" text="Count Records" />
-             <!--<Button alignment="CENTER" onAction="#refreshList" text="Refresh"/>-->
-         </children>
-          <BorderPane.margin>
-              <Insets right="10" />
-          </BorderPane.margin>
-      </VBox>
-   </right>
    <bottom>
     <HBox alignment="BOTTOM_LEFT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="20.0" spacing="100.0" BorderPane.alignment="BOTTOM_LEFT">
         <children>
@@ -64,26 +38,89 @@
     </HBox>
    </bottom>
    <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#openDatabase" text="Open Database" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" onAction="#testUpdatingTable" text="Edit">
-            <items>
-                  <MenuItem mnemonicParsing="false" text="Edit record" />
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#openAbout" text="About" />
-                  <MenuItem mnemonicParsing="false" onAction="#openGH" text="My GitHub" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#openDatabase" text="Open Database" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" onAction="#testUpdatingTable" text="Edit">
+                  <items>
+                        <MenuItem mnemonicParsing="false" text="Edit record" />
+                    <MenuItem mnemonicParsing="false" text="Delete" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#openAbout" text="About" />
+                        <MenuItem mnemonicParsing="false" onAction="#openGH" text="My GitHub" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <TabPane fx:id="tabPane" prefHeight="656.0" prefWidth="500.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab fx:id="databaseTab" text="Database">
+                     <content>
+                        <HBox alignment="CENTER" spacing="30.0">
+                           <children>
+                                <TableView fx:id="artistsTable" prefWidth="400" HBox.hgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="nameColumn" prefWidth="${artistsTable.width}" text="Artist name">
+                                            <cellValueFactory>
+                                                <PropertyValueFactory property="name" />
+                                            </cellValueFactory>
+                                        </TableColumn>
+                                    </columns>
+                                </TableView>
+                                 <TableView fx:id="albumsTable" prefWidth="300.0">
+                                    <columns>
+                                    <TableColumn prefWidth="${albumsTable.width}" text="Album name">
+                                        <cellValueFactory>
+                                            <PropertyValueFactory property="name" />
+                                        </cellValueFactory>
+                                    </TableColumn>
+                                    </columns>
+                                </TableView>
+                                <TableView fx:id="songsTable" prefWidth="300" HBox.hgrow="ALWAYS">
+                                    <columns>
+                                    <TableColumn prefWidth="45" text="Track">
+                                        <cellValueFactory>
+                                            <PropertyValueFactory property="track" />
+                                        </cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn prefWidth="${songsTable.width}" text="Songs">
+                                        <cellValueFactory>
+                                            <PropertyValueFactory property="title" />
+                                        </cellValueFactory>
+                                    </TableColumn>
+                                    </columns>
+                                </TableView>
+                              <VBox blendMode="MULTIPLY" maxHeight="200.0" prefHeight="170.0" prefWidth="150.0" spacing="20.0">
+                                 <children>
+                                    <Button alignment="CENTER" onAction="#listArtists" prefWidth="130.0" text="List Artists" textAlignment="CENTER" />
+                                    <Button mnemonicParsing="false" onAction="#showListOfAlbums" prefWidth="130.0" text="Show album &quot;Artists&quot;" />
+                                    <Button alignment="CENTER" mnemonicParsing="false" onAction="#updateArtist" prefWidth="130.0" text="Update artist" textAlignment="CENTER" />
+                                    <Button alignment="CENTER" mnemonicParsing="false" onAction="#addNewRecord" prefWidth="130.0" text="Add new record" />
+                                     <Button alignment="CENTER" onAction="#countRecords" text="Count Records" />
+                                    <Button mnemonicParsing="false" onAction="#albumList" text="AlbumListTest" />
+                                     <Button mnemonicParsing="false" onAction="#songList" text="SongListTest" />
+                                     <!--<Button alignment="CENTER" onAction="#refreshList" text="Refresh"/>-->
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </content></Tab>
+                <Tab text="Details">
+                     <content>
+                        <WebView fx:id="webInfo" prefHeight="-1.0" prefWidth="-1.0" />
+                     </content></Tab>
+              </tabs>
+            </TabPane>
+         </children>
+      </VBox>
    </top>
 </BorderPane>
