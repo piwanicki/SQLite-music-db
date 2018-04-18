@@ -13,6 +13,4 @@ public class EditController {
         return editField;
     }
 
-
-
 }

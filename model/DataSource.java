@@ -739,18 +739,20 @@ public class DataSource {
     }
 
 
-    public void updateArtistRecord(String artistName, String newArtistName){
+    public boolean updateArtistRecord(String artistName, String newArtistName){
 
         try{
             updateArtist.setString(2,artistName);
             updateArtist.setString(1,newArtistName);
-            updateArtist.execute();
+            int affectedRows = updateArtist.executeUpdate();
             System.out.println("Record updated");
+            return affectedRows == 1;
 
         }catch(SQLException e){
             System.out.println("Something went wrong with updating an artist record");
             e.getMessage();
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -766,19 +768,20 @@ public class DataSource {
         }
     }
 
-    public void editAlbumRecord(String albumName, String newAlbumName){
+    public boolean editAlbumRecord(String albumName, String newAlbumName){
 
         try{
             editAlbum.setString(1,albumName);
             editAlbum.setString(2,newAlbumName);
-            editAlbum.execute();
+            int affectedRows = editAlbum.executeUpdate();
             System.out.println("Album record updated");
+            return affectedRows ==1;
 
         } catch(SQLException e) {
             System.out.println("Something went wrong with editAlbum method! " + e.getMessage());
             e.printStackTrace();
+            return false;
         }
-
     }
 
     public void deleteAlbumRecord(String albumName){
@@ -793,16 +796,18 @@ public class DataSource {
         }
     }
 
-    public void editSongRecord(String songName, String newSongName){
+    public boolean editSongRecord(String songName, String newSongName){
 
         try{
             editSong.setString(1,songName);
             editSong.setString(2,newSongName);
-            editSong.execute();
+            int affectedRows = editSong.executeUpdate();
             System.out.println("Song record updated");
+            return affectedRows ==1;
         } catch(SQLException e){
             System.out.println("Something went wrong with update song method! " + e.getMessage());
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -822,7 +827,6 @@ public class DataSource {
     public boolean testUpdateArtistName(int id, String newName){
 
         try{
-
             updateArtistName.setInt(2,id);
             updateArtistName.setString(1,newName);
             int affectedRows = updateArtistName.executeUpdate();

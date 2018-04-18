@@ -61,7 +61,7 @@
                 </Menu>
               </menus>
             </MenuBar>
-            <TabPane fx:id="tabPane" prefHeight="656.0" prefWidth="500.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="mainTabPane" prefHeight="656.0" prefWidth="500.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab fx:id="databaseTab" text="Database">
                      <content>
@@ -108,13 +108,14 @@
                                      <Button alignment="CENTER" onAction="#countRecords" text="Count Records" />
                                     <Button mnemonicParsing="false" onAction="#albumList" text="AlbumListTest" />
                                      <Button mnemonicParsing="false" onAction="#songList" text="SongListTest" />
+                                     <Button mnemonicParsing="false" onAction="#artistDetailsOnWiki" text="details"/>
                                      <!--<Button alignment="CENTER" onAction="#refreshList" text="Refresh"/>-->
                                  </children>
                               </VBox>
                            </children>
                         </HBox>
                      </content></Tab>
-                <Tab text="Details">
+                <Tab fx:id="detailsTab" text="Details">
                      <content>
                         <WebView fx:id="webInfo" prefHeight="-1.0" prefWidth="-1.0" />
                      </content></Tab>

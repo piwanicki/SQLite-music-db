@@ -39,9 +39,6 @@ public class Controller {
 
 
     @FXML
-    private TableView artistsTable;
-
-    @FXML
     private ProgressBar progBar;
 
     @FXML
@@ -61,13 +58,22 @@ public class Controller {
     private ObservableList<Artist> list;
 
     @FXML
-    private Tab databaseTab = new Tab("Database");
+    private Tab databaseTab;
+
+    @FXML
+    private Tab detailsTab;
+
+    @FXML
+    private TabPane mainTabPane;
 
     @FXML
     private TableView<Album> albumsTable;
 
     @FXML
     private TableView<Song> songsTable;
+
+    @FXML
+    private TableView artistsTable;
 
     @FXML
     private WebView webInfo;
@@ -93,8 +99,6 @@ public class Controller {
         webInfo.getEngine().setOnError(event -> {
             System.out.println(event.getMessage());
         });
-        this.webEngine.load("http://www.google.pl");
-
 
 
         contextArtistMenu = new ContextMenu();
@@ -280,9 +284,6 @@ public class Controller {
 //        }
 //    }
 
-
-
-
     @FXML
     public void listArtists() {
 
@@ -380,7 +381,6 @@ public class Controller {
             alert.showAndWait();
         }
 }
-
 
 
 
@@ -523,13 +523,28 @@ public class Controller {
         Album album = (Album) albumsTable.getSelectionModel().getSelectedItem();
         String newName = editDialog();
 
-        DataSource.getInstance().editAlbumRecord(album.getName(),newName);
+        Task<Boolean> task = new Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+                return DataSource.getInstance().editAlbumRecord(album.getName(),newName);
+            }
+        };
 
-        albumsTable.itemsProperty().unbind();
-        albumsTable.getItems().clear();
+        task.setOnSucceeded(event -> {
+            if(task.valueProperty().get()){
+                album.setName(newName);
+                albumsTable.refresh();
+            }
+        });
 
-        albumList();
 
+//
+//        albumsTable.itemsProperty().unbind();
+//        albumsTable.getItems().clear();
+//
+//        albumList();
+
+        new Thread(task).start();
         System.out.println("Album : " + album.getName() + " edited");
 
     }
@@ -560,7 +575,6 @@ public class Controller {
         songsTable.getItems().clear();
         songList();
 
-
     }
 
 
@@ -572,7 +586,6 @@ public class Controller {
            System.out.println("Record deleted: " + artist.getName());
            artistsTable.getItems().remove(artist);
        }
-
 
 
        @FXML
@@ -659,6 +672,24 @@ public class Controller {
             newName = controller.getEditLabel().getText();
         }
         return newName;
+    }
+
+    @FXML
+    public void artistDetailsOnWiki(){
+
+        Artist artist = (Artist) artistsTable.getSelectionModel().getSelectedItem();
+
+      String artName = artist.getName();
+
+        if(artName.contains(" ")){
+            artName.replace(" ","_");
+        }
+
+        String details = "https://en.wikipedia.org/wiki/" + artName;
+        this.webEngine.load(details);
+
+        mainTabPane.getSelectionModel().select(detailsTab);
+
     }
 
 
